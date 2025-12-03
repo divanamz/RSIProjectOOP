@@ -7,7 +7,7 @@ body, html {
 .header-wrapper {
     width: 100%;
     height: 75px;
-    background-color: #2fa7b8;
+    background-color: #113F67;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -77,6 +77,7 @@ body, html {
 <?php 
 $currentPage = $_GET['c'] ?? 'dashboard';
 ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <div class="header-wrapper">
 
@@ -90,14 +91,13 @@ $currentPage = $_GET['c'] ?? 'dashboard';
     <div class="header-nav">
         <a href="index.php?c=dashboard&m=index" class="<?= $currentPage == 'dashboard' ? 'active' : '' ?>">Home</a>
         <a href="index.php?c=volunteer&m=index" class="<?= $currentPage == 'volunteer' ? 'active' : '' ?>">Volunteer</a>
-        <a href="index.php?c=donate&m=index" class="<?= $currentPage == 'donate' ? 'active' : '' ?>">Donate</a>
+        <a href="index.php?c=donasi&m=index" class="<?= $currentPage == 'donasi' ? 'active' : '' ?>">Donasi</a>
     </div>
 
     <div class="header-right">
-      <a href="?c=profile&m=index" class="header-icon">
-          <i class="fa-solid fa-user"></i>
-      </a>
-
+        <a href="?c=profile&m=index" class="header-icon">
+            <i class="fa-solid fa-user"></i>
+        </a>
     </div>
 
 </div>

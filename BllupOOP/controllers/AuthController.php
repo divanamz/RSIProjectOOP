@@ -2,6 +2,8 @@
 class AuthController extends Controller{
   public function __construct(){
     // session_start();
+        parent::__construct();
+
     if (isset($_SESSION['user']) && ($_GET['m'] ?? '') !== 'logout') { //
       header("Location:?c=dashboard&m=index");
       exit();
@@ -20,14 +22,19 @@ public function loginProcess(){
     $user = $userModel->getByEmail($email);
 
     if ($user && password_verify($password, $user->password)) {
+              $userWithProfile = $userModel->getUserWithProfile($user->id);
+
         $_SESSION['user'] = [
             'id' => $user->id,
-            'email' => $user->email
+            'email' => $user->email,
+            'nickname' => $userWithProfile->nickname ?? ''
+            
         ];
         header('Location:?c=dashboard&m=index');
         exit();
     } else {
-        $this->loadView("auth/login", ['title'=>'Login','error'=>'Email atau password salah','email'=>$email]);
+        $this->loadView("auth/login", ['title'=>'Login','error'=>'Email atau password salah','email'=>$email],null);
+        exit();
     }
 }
 

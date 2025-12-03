@@ -1,6 +1,6 @@
 <?php
 
-class Profile extends Model {
+class ProfileModel extends Model {
 
     public function getProfileByUserId($user_id) {
         $stmt = $this->dbconn->prepare("SELECT * FROM user_profiles WHERE user_id = ?");
@@ -18,8 +18,19 @@ class Profile extends Model {
         return $stmt->execute();
     }
 
+    public function syncEmailFromUsers($user_id) {
+        // Sync email dari users table ke user_profiles
+        $stmt = $this->dbconn->prepare(
+            "UPDATE user_profiles SET email = (SELECT email FROM users WHERE id = ?) WHERE user_id = ?"
+        );
+        $stmt->bind_param("ii", $user_id, $user_id);
+        return $stmt->execute();
+    }
+
     public function updateProfile($data) {
         $sql = "UPDATE user_profiles SET 
+            foto_profil = ?,
+            foto_header = ?,
             fullname = ?, 
             nickname = ?, 
             email = ?, 
@@ -31,8 +42,14 @@ class Profile extends Model {
         WHERE user_id = ?";
 
         $stmt = $this->dbconn->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+
         $stmt->bind_param(
-            "ssssssssi",
+            "ssssssssssi",
+            $data['foto_profil'],
+            $data['foto_header'],
             $data['fullname'],
             $data['nickname'],
             $data['email'],

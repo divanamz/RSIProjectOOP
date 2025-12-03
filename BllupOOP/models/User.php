@@ -200,7 +200,7 @@ class User extends Model {
      * Get user with profile
      */
     public function getUserWithProfile($id) {
-        $sql = "SELECT u.*, up.* 
+        $sql = "SELECT u.*, up.nickname 
                 FROM users u 
                 LEFT JOIN user_profiles up ON u.id = up.user_id 
                 WHERE u.id = ?";

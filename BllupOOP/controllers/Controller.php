@@ -4,11 +4,24 @@ include_once __DIR__ . "/../models/Model.php";
 
 class Controller{
 
+  public function __construct() {
+    if (session_status() === PHP_SESSION_NONE) {
+      session_start();
+    }    // Hanya redirect ke dashboard jika di halaman login/register dan sudah login
+    $currentController = $_GET['c'] ?? '';
+    $currentMethod = $_GET['m'] ?? '';
+    
+    if (isset($_SESSION['user']) && $currentController === 'auth' && $currentMethod !== 'logout') {
+      header("Location:?c=dashboard&m=index");
+      exit();
+    }
+  }
+
   public function loadModel($modelName){
     $modelClass = ucfirst($modelName);
     $modelFile = "models/{$modelName}.php";
 
-    include_once __DIR__ . "/../" . $modelFile; // Path relatif dari Controller.php
+    include_once __DIR__ . "/../" . $modelFile;
     return new $modelClass();
   }
 

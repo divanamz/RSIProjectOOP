@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register</title>
   <link rel="stylesheet" href="style/css/register.css" />
+      <link rel="icon" href="style/assets/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="style/assets/favicon.ico" type="image/x-icon">
 </head>
 <body>
   <div class="container">

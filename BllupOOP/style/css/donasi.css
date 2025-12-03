@@ -1,0 +1,227 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: #f8f8f8;
+}
+
+/* ================= HERO SECTION ================= */
+.hero {
+  position: relative;
+  height: 650px;
+  background: url('../assets/don.jpg') center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.hero-container {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* TEKS DI HERO */
+.hero-text {
+  max-width: 450px;
+  margin-top: 80px;
+  text-align: left;
+}
+
+.hero-text h1 {
+  font-size: 52px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.hero-text p {
+  font-size: 16px;
+  color: #f0f0f0;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* SUPAYA SECTION BAWAH TURUN DAN GA NUBRUK */
+section.py-5 {
+  margin-top: 120px;
+}
+
+/* ================= BUTTON ================= */
+.btn-primary {
+  background: #ffffff;
+  color: rgb(44, 68, 152);
+  border: none;
+  padding: 12px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #0d47a1;
+  color: white;
+}
+
+.btn-p {
+  background: #1565c0;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s ease;
+}
+
+.btn-p:hover {
+  background: #193560;
+  color: rgb(249, 249, 250);
+}
+
+label {
+  font-weight: 600;
+}
+
+/* ================= DONATION CARD ================= */
+.donation-card {
+  position: absolute;
+  bottom: -250px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #000;
+  width: 500px;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.amount {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.progress-container {
+  background: #e0e0e0;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  background: #00a8e8;
+  height: 100%;
+  width: 60%;
+  border-radius: 5px;
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #555;
+}
+
+/* ============================
+   FIX FORM DONASI (FINAL)
+   ============================ */
+
+/* Hilangkan margin bawaan yang bikin kolom tidak rata */
+#donasiModal .form-control,
+#donasiModal select {
+  margin-bottom: 0 !important;
+}
+
+/* Gunakan spacing Bootstrap saja */
+#donasiModal .row > div {
+  margin-bottom: 16px;
+}
+
+/* Samakan tinggi seluruh input */
+#donasiModal .form-control,
+#donasiModal select,
+#donasiModal .input-group-text {
+  height: 48px !important;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+
+/* Input-group untuk phone & amount */
+#donasiModal .input-group .form-control {
+  height: 48px !important;
+}
+
+#donasiModal .input-group-text {
+  font-weight: 600;
+}
+
+/* Styling tombol donasi */
+#donasiModal .btn-primary {
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+/* Tambahan agar label rapi */
+#donasiModal label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Modal header biar lebih profesional */
+#donasiModal .modal-header {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Modal footer rapi */
+#donasiModal .modal-footer {
+  border-top: 0;
+  padding-top: 0;
+}
+
+#donasiModal button[type='submit'] {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .hero {
+    height: 500px;
+  }
+
+  .hero-text h1 {
+    font-size: 36px;
+  }
+
+  .donation-card {
+    width: 90%;
+    padding: 20px;
+  }
+}
