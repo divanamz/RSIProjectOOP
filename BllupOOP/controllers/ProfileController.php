@@ -45,26 +45,56 @@ class ProfileController extends Controller {
         // POST: proses update
         // ambil current profile untuk default file names
         $current = $profileModel->getProfileByUserId($user_id);
-        $uploadDir = __DIR__ . '/../../uploads/';
+        $uploadDir = __DIR__ . '../../uploads';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }
 
         // helper untuk upload file (mengembalikan filename atau existing)
         $handleUpload = function($fieldName, $currentFilename) use ($uploadDir) {
-            if (!isset($_FILES[$fieldName]) || $_FILES[$fieldName]['error'] !== UPLOAD_ERR_OK) {
+            if (!isset($_FILES[$fieldName])) {
+                error_log("[Profile] no file field: {$fieldName}");
                 return $currentFilename;
             }
-            $tmp = $_FILES[$fieldName]['tmp_name'];
-            $orig = basename($_FILES[$fieldName]['name']);
+
+            $file = $_FILES[$fieldName];
+
+            // log raw file info untuk debugging
+            error_log("[Profile] Upload {$fieldName}: " . print_r($file, true));
+
+            if ($file['error'] === UPLOAD_ERR_NO_FILE) {
+                return $currentFilename;
+            }
+
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                error_log("[Profile] Upload error ({$fieldName}): " . $file['error']);
+                $_SESSION['error_message'] = "Upload gagal (error code {$file['error']}).";
+                return $currentFilename;
+            }
+
+            $tmp = $file['tmp_name'];
+            if (!is_uploaded_file($tmp)) {
+                error_log("[Profile] tmp file not uploaded: {$tmp}");
+                $_SESSION['error_message'] = "File upload invalid.";
+                return $currentFilename;
+            }
+
+            $orig = basename($file['name']);
             $ext = pathinfo($orig, PATHINFO_EXTENSION);
             $safe = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', pathinfo($orig, PATHINFO_FILENAME));
             $newName = time() . '_' . $safe . ($ext ? '.' . $ext : '');
-            $dest = $uploadDir . $newName;
-            if (move_uploaded_file($tmp, $dest)) {
-                return $newName;
+            $dest = rtrim($uploadDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $newName;
+
+            if (!move_uploaded_file($tmp, $dest)) {
+                error_log("[Profile] move_uploaded_file failed: {$tmp} -> {$dest}");
+                $_SESSION['error_message'] = "Gagal memindahkan file ke folder uploads. Periksa permission.";
+                return $currentFilename;
             }
-            return $currentFilename;
+
+            // optional: set permisssion for saved file
+            @chmod($dest, 0644);
+
+            return $newName;
         };
 
         $foto_profil = $handleUpload('foto_profil', $current->foto_profil ?? 'default.jpg');

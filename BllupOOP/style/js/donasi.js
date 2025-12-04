@@ -1,11 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const endpoint = 'donasi.php';
+  const endpoint = '?c=donasi&m=process'; // gunakan endpoint controller
   const donateBtn = document.getElementById('donateBtn');
   const donateBtn2 = document.getElementById('donateBtn2');
   const form = document.getElementById('formDonasi');
 
   const donasiModal = new bootstrap.Modal(document.getElementById('donasiModal'));
   const qrisModal = new bootstrap.Modal(document.getElementById('qrisModal'));
+
+  const totalAmountEl = document.getElementById('totalAmount');
+  const totalDonorsEl = document.getElementById('totalDonors');
+  const progressBarEl = document.getElementById('donationProgress');
+  const progressPercentEl = document.getElementById('progressPercent');
+  const TARGET_AMOUNT = 1000000; // ubah sesuai target
+
+  function formatRp(num){
+    return 'Rp. ' + (Number(num) || 0).toLocaleString('id-ID');
+  }
+
+  function applyStats(stats){
+    if (!stats) return;
+    const total = Number(stats.total_amount) || 0;
+    const donors = Number(stats.total_donors) || 0;
+    totalAmountEl.textContent = formatRp(total);
+    totalDonorsEl.textContent = donors + ' investor';
+    const percent = Math.min(100, Math.round((total / TARGET_AMOUNT) * 100));
+    progressBarEl.style.width = percent + '%';
+    progressPercentEl.textContent = percent + '%';
+  }
 
   donateBtn?.addEventListener('click', () => donasiModal.show());
   donateBtn2?.addEventListener('click', () => donasiModal.show());
@@ -24,15 +45,16 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Response server:', data);
 
         if (data.status === 'success') {
-          donasiModal.hide(); // tutup form
-          qrisModal.show(); // tampil QRIS
+          // update stats segera (server returns stats including pending after create)
+          if (data.stats) applyStats(data.stats);
 
-          // tampil QRIS selama 5 detik
+          donasiModal.hide();
+          qrisModal.show();
+
           setTimeout(() => {
-            // Update status pembayaran di server
             const updateData = new FormData();
             updateData.append('action', 'update_status');
-            updateData.append('donasi_id', data.donasi_id); // pastikan server kirim ID donasi
+            updateData.append('donasi_id', data.donasi_id);
 
             fetch(endpoint, {
               method: 'POST',
@@ -41,17 +63,17 @@ document.addEventListener('DOMContentLoaded', () => {
               .then((res) => res.json())
               .then((resp) => {
                 if (resp.status === 'success') {
+                  if (resp.stats) applyStats(resp.stats); // update with success-only stats
                   qrisModal.hide();
                   alert('Pembayaran berhasil diverifikasi!');
-                  location.reload();
                 } else {
                   alert('Gagal update status pembayaran!');
                   console.error(resp);
                 }
               });
-          }, 5000); // 5 detik QRIS
+          }, 5000);
         } else {
-          alert('Gagal mengirim donasi! Lihat console');
+          alert('Gagal mengirim donasi! ' + data.error);
           console.error(data);
         }
       })

@@ -33,15 +33,15 @@ $totalAmount = $stats['total_amount'] ?? 0;
       </div>
 
       <div class="donation-card">
-        <p class="amount">Rp. <?= number_format($totalAmount, 0, ',', '.') ?></p>
+        <p class="amount" id="totalAmount">Rp. <?= number_format($totalAmount, 0, ',', '.') ?></p>
         <div class="progress-container">
           <div class="progress">
-            <div class="progress-bar" style="width: 60%;"></div>
+            <div class="progress-bar" id="donationProgress" style="width: 60%;"></div>
           </div>
         </div>
         <div class="card-bottom">
-          <span><?= $totalDonors ?> investor</span>
-          <span>60%</span>
+          <span id="totalDonors"><?= $totalDonors ?> donatur</span>
+          <span id="progressPercent">0%</span>
         </div>
       </div>
     </div>
@@ -65,6 +65,72 @@ $totalAmount = $stats['total_amount'] ?? 0;
       </div>
     </div>
   </section>
+
+  <!-- ==================== DONATION HISTORY ==================== -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h3 class="fw-bold text-center mb-4">Riwayat Donasi Sebelumnya</h3>
+
+    <p class="text-center mb-4 text-muted">
+      Berikut adalah beberapa program yang telah berhasil dijalankan berkat dukungan para donatur sebelumnya.
+    </p>
+
+    <div class="row justify-content-center">
+
+      <!-- PROGRAM 1 -->
+      <div class="col-md-8 mb-4">
+        <div class="card shadow-sm border-0 p-4">
+          <h5 class="fw-bold">Program Pemulihan Pesisir Pantai 2024</h5>
+          <p class="mb-1 text-muted">
+            Fokus: Penanaman 2.500 bibit mangrove & pembersihan sampah pesisir.
+          </p>
+          <p class="mb-2">
+            <strong>Total Dana Terkumpul:</strong> Rp 87.450.000
+          </p>
+          <p class="text-muted">
+            Dana digunakan untuk logistik penanaman, peralatan relawan, serta edukasi lingkungan kepada
+            masyarakat sekitar wilayah pesisir.
+          </p>
+        </div>
+      </div>
+
+      <!-- PROGRAM 2 -->
+      <div class="col-md-8 mb-4">
+        <div class="card shadow-sm border-0 p-4">
+          <h5 class="fw-bold">Bantuan Air Bersih untuk Daerah Kekeringan 2023</h5>
+          <p class="mb-1 text-muted">
+            Fokus: Penyediaan tandon air dan distribusi air bersih harian.
+          </p>
+          <p class="mb-2">
+            <strong>Total Dana Terkumpul:</strong> Rp 124.300.000
+          </p>
+          <p class="text-muted">
+            Dana digunakan untuk penyewaan truk tangki air, pembelian selang distribusi, serta pembuatan titik
+            penampungan air sementara di tiga desa.
+          </p>
+        </div>
+      </div>
+
+      <!-- PROGRAM 3 -->
+      <div class="col-md-8 mb-4">
+        <div class="card shadow-sm border-0 p-4">
+          <h5 class="fw-bold">Program Bantuan Sosial Korban Banjir 2022</h5>
+          <p class="mb-1 text-muted">
+            Fokus: Paket sembako, obat-obatan, dan pakaian layak pakai.
+          </p>
+          <p class="mb-2">
+            <strong>Total Dana Terkumpul:</strong> Rp 63.800.000
+          </p>
+          <p class="text-muted">
+            Dana dialokasikan untuk pengadaan logistik, transportasi relawan, serta pendistribusian bantuan ke
+            lebih dari 400 keluarga terdampak.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 
   <!-- ==================== COMMUNITY SECTION ==================== -->
   <section class="community text-center py-3 bg-light">
@@ -222,6 +288,28 @@ $totalAmount = $stats['total_amount'] ?? 0;
       const donasiModal = new bootstrap.Modal(document.getElementById('donasiModal'));
       const qrisModal = new bootstrap.Modal(document.getElementById('qrisModal'));
 
+      const totalAmountEl = document.getElementById('totalAmount');
+      const totalDonorsEl = document.getElementById('totalDonors');
+      const progressBarEl = document.getElementById('donationProgress');
+      const progressPercentEl = document.getElementById('progressPercent');
+      // target untuk progress bar (ubah sesuai target kampanye)
+      const TARGET_AMOUNT = 1000000; // contoh: 1.000.000
+
+      function formatRp(num){
+        return 'Rp. ' + (Number(num) || 0).toLocaleString('id-ID');
+      }
+
+      function applyStats(stats){
+        if (!stats) return;
+        const total = Number(stats.total_amount) || 0;
+        const donors = Number(stats.total_donors) || 0;
+        totalAmountEl.textContent = formatRp(total);
+        totalDonorsEl.textContent = donors + ' investor';
+        const percent = Math.min(100, Math.round((total / TARGET_AMOUNT) * 100));
+        progressBarEl.style.width = percent + '%';
+        progressPercentEl.textContent = percent + '%';
+      }
+
       donateBtn?.addEventListener('click', () => donasiModal.show());
       donateBtn2?.addEventListener('click', () => donasiModal.show());
 
@@ -239,6 +327,9 @@ $totalAmount = $stats['total_amount'] ?? 0;
             console.log('Response server:', data);
 
             if (data.status === 'success') {
+              // update stats segera (server sudah mengembalikan stats)
+              if (data.stats) applyStats(data.stats);
+
               donasiModal.hide();
               qrisModal.show();
 
@@ -254,9 +345,12 @@ $totalAmount = $stats['total_amount'] ?? 0;
                   .then((res) => res.json())
                   .then((resp) => {
                     if (resp.status === 'success') {
+                      // update stats setelah verifikasi
+                      if (resp.stats) applyStats(resp.stats);
+
                       qrisModal.hide();
                       alert('Pembayaran berhasil diverifikasi!');
-                      location.reload();
+                      // optionally reload or just keep updated DOM
                     } else {
                       alert('Gagal update status pembayaran!');
                       console.error(resp);
